@@ -30,6 +30,12 @@ param set SERIAL5_PROTOCOL 5
 #include <sys/time.h>
 #include "SIM_SerialDevice.h"
 
+#include <thread>
+#include <mutex>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
 namespace SITL {
 
 // for delay simulation:
@@ -94,6 +100,7 @@ protected:
     class SIM *_sitl;
 
     static void simulation_timeval(struct timeval *tv);
+
 };
 
 class GPS : public SerialDevice {
@@ -140,6 +147,13 @@ public:
     ssize_t write_to_autopilot(const char *p, size_t size) const override;
 
     uint32_t device_baud() const override;  // 0 meaning unset
+
+    // TODO: Remove this
+    void start_receive_thread();
+    void receive_data();
+    int udprecv(int s, void *dataa, int siz);
+    int udpinit(short port);
+    std::mutex injector_mutex;
 
 private:
 
