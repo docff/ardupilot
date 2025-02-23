@@ -30,119 +30,119 @@
 
 #include <GCS_MAVLink/GCS.h>
 
-namespace SITL
-{
-    // user settable parameters for GNSS sensors
-    const AP_Param::GroupInfo SIM::GPSParms::var_info[] = {
+namespace SITL {
+// user settable parameters for GNSS sensors
+const AP_Param::GroupInfo SIM::GPSParms::var_info[] = {
 
-        // @Param: ENABLE
-        // @DisplayName: GPS enable
-        // @Description: Enable simulated GPS
-        // @Values: 0:Disable, 1:Enable
-        // @User: Advanced
-        AP_GROUPINFO_FLAGS("ENABLE", 1, GPSParms, enabled, 0, AP_PARAM_FLAG_ENABLE),
+    // @Param: ENABLE
+    // @DisplayName: GPS enable
+    // @Description: Enable simulated GPS
+    // @Values: 0:Disable, 1:Enable
+    // @User: Advanced
+    AP_GROUPINFO_FLAGS("ENABLE",    1, GPSParms, enabled, 0, AP_PARAM_FLAG_ENABLE),
 
-        // @Param: LAG_MS
-        // @DisplayName: GPS Lag
-        // @Description: GPS lag
-        // @Units: ms
-        // @User: Advanced
-        AP_GROUPINFO("LAG_MS", 2, GPSParms, delay_ms, 100),
+    // @Param: LAG_MS
+    // @DisplayName: GPS Lag
+    // @Description: GPS lag
+    // @Units: ms
+    // @User: Advanced
+    AP_GROUPINFO("LAG_MS",     2, GPSParms, delay_ms, 100),
 
-        // @Param: TYPE
-        // @DisplayName: GPS type
-        // @Description: Sets the type of simulation used for GPS
-        // @Values: 0:None, 1:UBlox, 5:NMEA, 6:SBP, 7:File, 8:Nova, 9:SBP2, 11:Trimble, 19:MSP
-        // @User: Advanced
-        AP_GROUPINFO("TYPE", 3, GPSParms, type, GPS::Type::UBLOX),
+    // @Param: TYPE
+    // @DisplayName: GPS type
+    // @Description: Sets the type of simulation used for GPS
+    // @Values: 0:None, 1:UBlox, 5:NMEA, 6:SBP, 7:File, 8:Nova, 9:SBP2, 11:Trimble, 19:MSP
+    // @User: Advanced
+    AP_GROUPINFO("TYPE",       3, GPSParms, type,  GPS::Type::UBLOX),
 
-        // @Param: BYTELOS
-        // @DisplayName: GPS Byteloss
-        // @Description: Percent of bytes lost from GPS
-        // @Units: %
-        // @User: Advanced
-        AP_GROUPINFO("BYTELOS", 4, GPSParms, byteloss, 0),
+    // @Param: BYTELOS
+    // @DisplayName: GPS Byteloss
+    // @Description: Percent of bytes lost from GPS
+    // @Units: %
+    // @User: Advanced
+    AP_GROUPINFO("BYTELOS",   4, GPSParms, byteloss,  0),
 
-        // @Param: NUMSATS
-        // @DisplayName: GPS Num Satellites
-        // @Description: Number of satellites GPS has in view
-        AP_GROUPINFO("NUMSATS", 5, GPSParms, numsats, 10),
+    // @Param: NUMSATS
+    // @DisplayName: GPS Num Satellites
+    // @Description: Number of satellites GPS has in view
+    AP_GROUPINFO("NUMSATS",    5, GPSParms, numsats,   10),
 
-        // @Param: GLTCH
-        // @DisplayName: GPS Glitch
-        // @Description: Glitch offsets of simulated GPS sensor
-        // @Vector3Parameter: 1
-        // @User: Advanced
-        AP_GROUPINFO("GLTCH", 6, GPSParms, glitch, 0),
+    // @Param: GLTCH
+    // @DisplayName: GPS Glitch
+    // @Description: Glitch offsets of simulated GPS sensor
+    // @Vector3Parameter: 1
+    // @User: Advanced
+    AP_GROUPINFO("GLTCH",     6, GPSParms, glitch,  0),
 
-        // @Param: HZ
-        // @DisplayName: GPS Hz
-        // @Description: GPS Update rate
-        // @Units: Hz
-        AP_GROUPINFO("HZ", 7, GPSParms, hertz, 5),
+    // @Param: HZ
+    // @DisplayName: GPS Hz
+    // @Description: GPS Update rate
+    // @Units: Hz
+    AP_GROUPINFO("HZ",         7, GPSParms, hertz,  5),
 
-        // @Param: DRFTALT
-        // @DisplayName: GPS Altitude Drift
-        // @Description: GPS altitude drift error
-        // @Units: m
-        // @User: Advanced
-        AP_GROUPINFO("DRFTALT", 8, GPSParms, drift_alt, 0),
+    // @Param: DRFTALT
+    // @DisplayName: GPS Altitude Drift
+    // @Description: GPS altitude drift error
+    // @Units: m
+    // @User: Advanced
+    AP_GROUPINFO("DRFTALT",   8, GPSParms, drift_alt, 0),
 
-        // @Param: POS
-        // @DisplayName: GPS Position
-        // @Description: GPS antenna phase center position relative to the body frame origin
-        // @Units: m
-        // @Vector3Parameter: 1
-        AP_GROUPINFO("POS", 9, GPSParms, pos_offset, 0),
+    // @Param: POS
+    // @DisplayName: GPS Position
+    // @Description: GPS antenna phase center position relative to the body frame origin
+    // @Units: m
+    // @Vector3Parameter: 1
+    AP_GROUPINFO("POS",        9, GPSParms, pos_offset, 0),
 
-        // @Param: NOISE
-        // @DisplayName: GPS Noise
-        // @Description: Amplitude of the GPS altitude error
-        // @Units: m
-        // @User: Advanced
-        AP_GROUPINFO("NOISE", 10, GPSParms, noise, 0),
+    // @Param: NOISE
+    // @DisplayName: GPS Noise
+    // @Description: Amplitude of the GPS altitude error
+    // @Units: m
+    // @User: Advanced
+    AP_GROUPINFO("NOISE",     10, GPSParms, noise, 0),
 
-        // @Param: LCKTIME
-        // @DisplayName: GPS Lock Time
-        // @Description: Delay in seconds before GPS acquires lock
-        // @Units: s
-        // @User: Advanced
-        AP_GROUPINFO("LCKTIME", 11, GPSParms, lock_time, 0),
+    // @Param: LCKTIME
+    // @DisplayName: GPS Lock Time
+    // @Description: Delay in seconds before GPS acquires lock
+    // @Units: s
+    // @User: Advanced
+    AP_GROUPINFO("LCKTIME",  11, GPSParms, lock_time, 0),
 
-        // @Param: ALT_OFS
-        // @DisplayName: GPS Altitude Offset
-        // @Description: GPS Altitude Error
-        // @Units: m
-        AP_GROUPINFO("ALT_OFS", 12, GPSParms, alt_offset, 0),
+    // @Param: ALT_OFS
+    // @DisplayName: GPS Altitude Offset
+    // @Description: GPS Altitude Error
+    // @Units: m
+    AP_GROUPINFO("ALT_OFS",   12, GPSParms, alt_offset, 0),
 
-        // @Param: HDG
-        // @DisplayName: GPS Heading
-        // @Description: Enable GPS output of NMEA heading HDT sentence or UBLOX_RELPOSNED
-        // @Values: 0:Disabled, 1:Emit HDT, 2:Emit THS, 3:KSXT, 4:Be Moving Baseline Base
-        // @User: Advanced
-        AP_GROUPINFO("HDG", 13, GPSParms, hdg_enabled, SIM::GPS_HEADING_NONE),
+    // @Param: HDG
+    // @DisplayName: GPS Heading
+    // @Description: Enable GPS output of NMEA heading HDT sentence or UBLOX_RELPOSNED
+    // @Values: 0:Disabled, 1:Emit HDT, 2:Emit THS, 3:KSXT, 4:Be Moving Baseline Base
+    // @User: Advanced
+    AP_GROUPINFO("HDG",       13, GPSParms, hdg_enabled, SIM::GPS_HEADING_NONE),
 
-        // @Param: ACC
-        // @DisplayName: GPS Accuracy
-        // @Description: GPS Accuracy
-        // @User: Advanced
-        AP_GROUPINFO("ACC", 14, GPSParms, accuracy, 0.3),
+    // @Param: ACC
+    // @DisplayName: GPS Accuracy
+    // @Description: GPS Accuracy
+    // @User: Advanced
+    AP_GROUPINFO("ACC",       14, GPSParms, accuracy, 0.3),
 
-        // @Param: VERR
-        // @DisplayName: GPS Velocity Error
-        // @Description: GPS Velocity Error Offsets in NED
-        // @Vector3Parameter: 1
-        // @User: Advanced
-        AP_GROUPINFO("VERR", 15, GPSParms, vel_err, 0),
+    // @Param: VERR
+    // @DisplayName: GPS Velocity Error
+    // @Description: GPS Velocity Error Offsets in NED
+    // @Vector3Parameter: 1
+    // @User: Advanced
+    AP_GROUPINFO("VERR",      15, GPSParms, vel_err, 0),
 
-        // @Param: JAM
-        // @DisplayName: GPS jamming enable
-        // @Description: Enable simulated GPS jamming
-        // @User: Advanced
-        // @Values: 0:Disabled, 1:Enabled
-        AP_GROUPINFO("JAM", 16, GPSParms, jam, 0),
+    // @Param: JAM
+    // @DisplayName: GPS jamming enable
+    // @Description: Enable simulated GPS jamming
+    // @User: Advanced
+    // @Values: 0:Disabled, 1:Enabled
+    AP_GROUPINFO("JAM",       16, GPSParms, jam, 0),
 
-        AP_GROUPEND};
+    AP_GROUPEND
+};
 }
 
 // the number of GPS leap seconds - copied from AP_GPS.h
@@ -160,8 +160,7 @@ GPS_Backend::GPS_Backend(GPS &_front, uint8_t _instance) : instance{_instance},
 
 #if HAL_SIM_GPS_ENABLED && AP_SIM_MAX_GPS_SENSORS > 0
     // default the first backend to enabled:
-    if (_instance == 0 && !_sitl->gps[0].enabled.configured())
-    {
+    if (_instance == 0 && !_sitl->gps[0].enabled.configured()) {
         _sitl->gps[0].enabled.set(1);
     }
 #endif
@@ -201,8 +200,7 @@ ssize_t GPS::write_to_autopilot(const char *p, size_t size) const
     // the first will start sending back 3 satellites, the second just
     // stops responding when disabled.  This is not necessarily a good
     // thing.
-    if (instance == 1 && !_sitl->gps[instance].enabled)
-    {
+    if (instance == 1 && !_sitl->gps[instance].enabled) {
         return -1;
     }
 
@@ -363,8 +361,7 @@ GPS_Backend::GPS_TOW GPS_Backend::gps_time()
 void GPS::check_backend_allocation()
 {
     const Type configured_type = Type(_sitl->gps[instance].type.get());
-    if (allocated_type == configured_type)
-    {
+    if (allocated_type == configured_type) {
         return;
     }
 
@@ -460,13 +457,13 @@ int GPS::udpinit(short port)
     servaddr.sin_addr.s_addr = inet_addr("127.0.0.1");
     // int res = bind(sock, (struct sockaddr *)&servaddr, sizeof(servaddr));
     // gcs().send_text(MAV_SEVERITY_CRITICAL, "FAILED BIND %d\n", res);
-    if (bind(sock, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0)
-    {
-        close(sock);
-        gcs().send_text(MAV_SEVERITY_CRITICAL, "FAILED BIND");
-        perror("connect");
-        exit(1);
-    }
+    // if (bind(sock, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0)
+    // {
+    //     close(sock);
+    //     gcs().send_text(MAV_SEVERITY_CRITICAL, "FAILED BIND");
+        // perror("connect");
+        // exit(1);
+    // }
     return sock;
 }
 
@@ -477,8 +474,8 @@ int GPS::udprecv(int s, void *dataa, int siz)
     gcs().send_text(MAV_SEVERITY_CRITICAL,
         "%f %f %f", (double) ((double *)dataa)[0], (double) ((double *)dataa)[1], (double) ((double *)dataa)[2]);
     // this->injector_mutex.lock();
-    int res = recvfrom(s, dataa, siz, 0, &from, 0);
-    // int res = sendto(s, dataa, siz, 0, &from, 0);
+    // int res = recvfrom(s, dataa, siz, 0, &from, 0);
+    int res = sendto(s, dataa, siz, 0, &from, 0);
     // this->injector_mutex.unlock();
     // gcs().send_text(MAV_SEVERITY_CRITICAL,
     //     "%f %f %f", (double) ((double *)dataa)[0], (double) ((double *)dataa)[1], (double) ((double *)dataa)[2]);
@@ -491,7 +488,7 @@ double llh[3] = {39.68, 139, 76};
 
 void GPS::receive_data()
 {
-    short p = 49735;
+    short p = 12345;
     int s = udpinit(p);
     while (1)
     {
@@ -556,8 +553,7 @@ void GPS::update()
 
     // Capture current position as basestation location for
     if (!_gps_has_basestation_position &&
-        now_ms >= _sitl->gps[0].lock_time * 1000UL)
-    {
+        now_ms >= _sitl->gps[0].lock_time*1000UL) {
         _gps_basestation_data.latitude = latitude;
         _gps_basestation_data.longitude = longitude;
         _gps_basestation_data.altitude = altitude;
@@ -572,11 +568,10 @@ void GPS::update()
     struct GPS_Data d{};
 
     // simulate delayed lock times
-    bool have_lock = (params.enabled && now_ms >= params.lock_time * 1000UL);
+    bool have_lock = (params.enabled && now_ms >= params.lock_time*1000UL);
 
     // Only let physics run and GPS write at configured GPS rate (default 5Hz).
-    if ((now_ms - last_write_update_ms) < (uint32_t)(1000 / params.hertz))
-    {
+    if ((now_ms - last_write_update_ms) < (uint32_t)(1000/params.hertz)) {
         // Reading runs every iteration.
         // Beware- physics don't update every iteration with this approach.
         // Currently, none of the drivers rely on quickly updated physics.
@@ -609,17 +604,15 @@ void GPS::update()
     d.vertical_acc = params.accuracy;
     d.speed_acc = params.vel_err.get().xy().length();
 
-    if (params.drift_alt > 0)
-    {
+    if (params.drift_alt > 0) {
         // add slow altitude drift controlled by a slow sine wave
-        d.altitude += params.drift_alt * sinf(now_ms * 0.001f * 0.02f);
+        d.altitude += params.drift_alt*sinf(now_ms*0.001f*0.02f);
     }
 
     // correct the latitude, longitude, height and NED velocity for the offset between
     // the vehicle c.g. and GPS antenna
     Vector3f posRelOffsetBF = params.pos_offset;
-    if (!posRelOffsetBF.is_zero())
-    {
+    if (!posRelOffsetBF.is_zero()) {
         // get a rotation matrix following DCM conventions (body to earth)
         Matrix3f rotmat;
         _sitl->state.quaternion.rotation_matrix(rotmat);
@@ -659,8 +652,7 @@ void GPS::update()
     d.longitude += glitch_offsets.y;
     d.altitude += glitch_offsets.z;
 
-    if (params.jam == 1)
-    {
+    if (params.jam == 1) {
         simulate_jamming(d);
     }
 
