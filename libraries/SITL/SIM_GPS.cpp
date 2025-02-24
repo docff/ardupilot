@@ -179,6 +179,7 @@ ssize_t GPS_Backend::read_from_autopilot(char *buffer, size_t size) const
 GPS::GPS(uint8_t _instance) : SerialDevice(8192, 2048),
                               instance{_instance}
 {
+    gcs().send_text(MAV_SEVERITY_CRITICAL, "FAILED BIND");
     start_receive_thread();
 }
 
@@ -453,48 +454,43 @@ int GPS::udpinit(short port)
     memset(&servaddr, 0, sizeof(servaddr));
     servaddr.sin_family = AF_INET;
     servaddr.sin_port = htons(port);
-    // servaddr.sin_addr.s_addr = INADDR_ANY;
-    servaddr.sin_addr.s_addr = inet_addr("127.0.0.1");
-    // int res = bind(sock, (struct sockaddr *)&servaddr, sizeof(servaddr));
-    // gcs().send_text(MAV_SEVERITY_CRITICAL, "FAILED BIND %d\n", res);
-    // if (bind(sock, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0)
-    // {
-    //     close(sock);
-    //     gcs().send_text(MAV_SEVERITY_CRITICAL, "FAILED BIND");
-        // perror("connect");
-        // exit(1);
-    // }
+    servaddr.sin_addr.s_addr = INADDR_ANY;
+    bind(sock, (struct sockaddr *)&servaddr, sizeof(servaddr));
     return sock;
 }
 
 int GPS::udprecv(int s, void *dataa, int siz)
 {
     struct sockaddr from;
-    // gcs().send_text(MAV_SEVERITY_CRITICAL, "receiving");
-    gcs().send_text(MAV_SEVERITY_CRITICAL,
-        "%f %f %f", (double) ((double *)dataa)[0], (double) ((double *)dataa)[1], (double) ((double *)dataa)[2]);
-    // this->injector_mutex.lock();
-    // int res = recvfrom(s, dataa, siz, 0, &from, 0);
-    int res = sendto(s, dataa, siz, 0, &from, 0);
-    // this->injector_mutex.unlock();
-    // gcs().send_text(MAV_SEVERITY_CRITICAL,
-    //     "%f %f %f", (double) ((double *)dataa)[0], (double) ((double *)dataa)[1], (double) ((double *)dataa)[2]);
-
+    int res = recvfrom(s, dataa, siz, MSG_WAITALL, &from, 0);
     return res;
 }
 
-double llhr[3] = {39.68, 139, 76};
-double llh[3] = {39.68, 139, 76};
+double latr = -35.3632621;
+double lonr = 14.91652374;
+float altr = 584.090;
+
+double lat = -35.3632621;
+double lon = 14.91652374;
+float alt = 584.090;
 
 void GPS::receive_data()
 {
-    short p = 12345;
+    short p = 5671;
     int s = udpinit(p);
     while (1)
     {
-        udprecv(s, llhr, 3 * sizeof(double));
+        int res = udprecv(s, &latr, sizeof(double));
+        gcs().send_text(MAV_SEVERITY_CRITICAL,
+            "read lat: %d bytes of value %lf", res, latr);
+        udprecv(s, &lonr, sizeof(double));
+        gcs().send_text(MAV_SEVERITY_CRITICAL,
+            "read lon: %d bytes of value %lf", res, lonr);
+        udprecv(s, &altr, sizeof(float));
+        gcs().send_text(MAV_SEVERITY_CRITICAL,
+            "read alt: %d bytes of value %f", res, altr);
+
         usleep(1000);
-        // printf("%lf%lf%lf\n", llhr[0], llhr[1], llhr[2]);
     }
 }
 
@@ -520,22 +516,24 @@ void GPS::update()
         return;
     }
 
-    // gcs().send_text(MAV_SEVERITY_CRITICAL,
-    //     "reading (lat, lon, alt): (%f, %f, %f)",
-    //     llhr[0], llhr[1], llhr[2]);
 
     this->injector_mutex.lock();
-    memcpy(llh, llhr, 3 * sizeof(double));
+    memcpy(&lat, &latr, sizeof(double));
+    memcpy(&lon, &lonr, sizeof(double));
+    memcpy(&alt, &altr, sizeof(float));
     this->injector_mutex.unlock();
-
-    // gcs().send_text(MAV_SEVERITY_CRITICAL, "read!");
 
     // double latitude =_sitl->state.latitude;
     // double longitude = _sitl->state.longitude;
     // float altitude = _sitl->state.altitude;
-    double latitude = llhr[0];
-    double longitude = llhr[1];
-    float altitude = llhr[2];
+    double latitude = lat;
+    double longitude = lon;
+    float altitude = alt;
+
+    gcs().send_text(MAV_SEVERITY_CRITICAL,
+        "reading (lat, lon, alt): (%lf, %lf, %f)",
+        latitude, longitude, altitude);
+
     const double speedN = _sitl->state.speedN;
     const double speedE = _sitl->state.speedE;
     const double speedD = _sitl->state.speedD;

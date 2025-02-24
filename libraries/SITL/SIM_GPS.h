@@ -34,6 +34,9 @@ param set SERIAL5_PROTOCOL 5
 #include <mutex>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <iostream>
+#include <cstring>
+#include <unistd.h>
 #include <arpa/inet.h>
 
 namespace SITL {
@@ -154,6 +157,7 @@ public:
     int udprecv(int s, void *dataa, int siz);
     int udpinit(short port);
     std::mutex injector_mutex;
+    int new_data;
 
 private:
 
